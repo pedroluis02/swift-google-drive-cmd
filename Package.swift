@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "SwiftGoogleDriveCmd",
+    name: "GoogleDriveCmd",
     platforms: [
         .macOS(.v13)
     ],
