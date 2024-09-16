@@ -9,6 +9,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
+        .package(url: "https://github.com/apple/swift-nio", from: "2.72.0"),
         .package(url: "https://github.com/darrarski/swift-google-drive-client", from: "0.12.1")
     ],
     targets: [
@@ -16,7 +17,9 @@ let package = Package(
             name: "gdrive-cli",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "GoogleDriveClient", package: "swift-google-drive-client")
+                .product(name: "NIO", package: "swift-nio"),
+                .product(name: "NIOHTTP1", package: "swift-nio"),
+                .product(name: "GoogleDriveClient", package: "swift-google-drive-client"),
             ]
         )
     ]
