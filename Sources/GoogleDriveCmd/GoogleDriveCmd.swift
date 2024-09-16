@@ -7,6 +7,6 @@ struct GoogleDriveCmd: ParsableCommand {
 
     mutating func run() throws {
         print("Google Drive Cmd Client")
-        print("arg: \(arg)")   
+        print("arg: \(arg)")
     }
 }
