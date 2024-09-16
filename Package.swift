@@ -21,6 +21,10 @@ let package = Package(
                 .product(name: "NIOHTTP1", package: "swift-nio"),
                 .product(name: "GoogleDriveClient", package: "swift-google-drive-client"),
             ]
+        ),
+        .testTarget(
+            name: "GoogleDriveCmdTests",
+            dependencies: ["gdrive-cli"]
         )
     ]
 )
