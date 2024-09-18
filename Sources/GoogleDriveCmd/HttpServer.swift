@@ -12,6 +12,10 @@ class HttpServer {
     
     private let host: String
     private let port: Int
+
+    var localUrl: String {
+        return "http://localhost:\(self.port)"
+    }
     
     init(host: String? = nil, port: Int? = nil) {
         self.host = host ?? "::1"

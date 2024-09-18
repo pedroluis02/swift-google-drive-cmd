@@ -7,14 +7,12 @@ final class LocalServerTests: XCTestCase {
     func testStartServer() throws {
         let host = "localhost"
         let port = 8080
-        let urlString = "http://\(host):\(port)"
-        
         let server = HttpServer(host: host, port: port)
         
         let requestResult = expectation(description: "Request call result")
         var responseStatus: Int? = nil
         DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
-            let url = URL(string: urlString)!
+            let url = URL(string: server.localUrl)!
             URLSession.shared.dataTask(with: url) { (_, response, _) in
                 if let httpResponse = response as? HTTPURLResponse {
                     responseStatus = httpResponse.statusCode
