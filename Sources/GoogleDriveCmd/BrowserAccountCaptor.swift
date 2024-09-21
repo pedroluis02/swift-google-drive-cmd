@@ -10,23 +10,24 @@ class BrowserAccountCaptor {
         self.config = config
     }
     
-    func startSigningInPageSync() async throws -> AccountCode? {
+    func startSigningInPageSync() async throws -> (String, AccountCode?) {
         return await withCheckedContinuation { continuation in
-            try! startSigningInPage() { code in
-                continuation.resume(returning: code)
+            try! startSigningInPage() { endpoint, code in
+                continuation.resume(returning: (endpoint, code))
             }
         }
     }
     
-    func startSigningInPage(completion: @escaping (AccountCode?) -> Void) throws {
+    func startSigningInPage(completion: @escaping (String, AccountCode?) -> Void) throws {
         let semaphore = DispatchSemaphore(value: 0)
         let serverUrl = try startServer(semaphore: semaphore)
         
-        let signInPageURL = createSignInPageURL(serverUrl + config.redirectPath)
+        let serverEndpoint = serverUrl + config.redirectPath;
+        let signInPageURL = createSignInPageURL(serverEndpoint)
         openURL(signInPageURL)
         
         _  = semaphore.wait(timeout: .distantFuture)
-        completion(self.code)
+        completion(serverEndpoint, self.code)
     }
     
     private func startServer(semaphore: DispatchSemaphore) throws -> String {
