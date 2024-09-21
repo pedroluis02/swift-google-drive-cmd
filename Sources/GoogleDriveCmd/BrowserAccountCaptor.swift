@@ -4,12 +4,21 @@ import NIOHTTP1
 
 class BrowserAccountCaptor {
     private let config: AuthConfig
+    private var code: AccountCode?
     
     init(config: AuthConfig) {
         self.config = config
     }
     
-    func startSigningInPage() throws {
+    func startSigningInPageSync() async throws -> AccountCode? {
+        return await withCheckedContinuation { continuation in
+            try! startSigningInPage() { code in
+                continuation.resume(returning: code)
+            }
+        }
+    }
+    
+    func startSigningInPage(completion: @escaping (AccountCode?) -> Void) throws {
         let semaphore = DispatchSemaphore(value: 0)
         let serverUrl = try startServer(semaphore: semaphore)
         
@@ -17,6 +26,7 @@ class BrowserAccountCaptor {
         openURL(signInPageURL)
         
         _  = semaphore.wait(timeout: .distantFuture)
+        completion(self.code)
     }
     
     private func startServer(semaphore: DispatchSemaphore) throws -> String {
@@ -27,8 +37,7 @@ class BrowserAccountCaptor {
                     DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
                         semaphore.signal()
                     }
-                    let code = AccountCode(from: components)
-                    print(code)
+                    self.code = AccountCode(from: components)
                     return ("code received.", .ok)
                 } else {
                     return ("failed to get code.", .ok)
