@@ -4,21 +4,19 @@ import NIOHTTP1
 
 class BrowserAccountCaptor {
     private let config: AuthConfig
-    private var code: AccountCode?
+    private var code: String?
     
     init(config: AuthConfig) {
         self.config = config
     }
     
-    func startSigningInPageSync() async throws -> (String, AccountCode?) {
+    func startSigningInPageSync() async throws -> (CodeResult) {
         return await withCheckedContinuation { continuation in
-            try! startSigningInPage() { endpoint, code in
-                continuation.resume(returning: (endpoint, code))
-            }
+            try! startSigningInPage() { continuation.resume(returning: $0) }
         }
     }
     
-    func startSigningInPage(completion: @escaping (String, AccountCode?) -> Void) throws {
+    func startSigningInPage(completion: @escaping (CodeResult) -> Void) throws {
         let semaphore = DispatchSemaphore(value: 0)
         let serverUrl = try startServer(semaphore: semaphore)
         
@@ -27,7 +25,8 @@ class BrowserAccountCaptor {
         openURL(signInPageURL)
         
         _  = semaphore.wait(timeout: .distantFuture)
-        completion(serverEndpoint, self.code)
+        
+        completion(CodeResult(endpoint: serverEndpoint, code: code))
     }
     
     private func startServer(semaphore: DispatchSemaphore) throws -> String {
@@ -38,7 +37,7 @@ class BrowserAccountCaptor {
                     DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
                         semaphore.signal()
                     }
-                    self.code = AccountCode(from: components)
+                    self.code = components.extractCode()
                     return ("code received.", .ok)
                 } else {
                     return ("failed to get code.", .ok)
@@ -61,5 +60,11 @@ class BrowserAccountCaptor {
             URLQueryItem(name: "show_dialog", value: "false")
         ]
         return components.url!
+    }
+}
+
+private extension URLComponents {
+    func extractCode() -> String? {
+        return queryItems?.first(where: { $0.name == "code" })?.value
     }
 }
