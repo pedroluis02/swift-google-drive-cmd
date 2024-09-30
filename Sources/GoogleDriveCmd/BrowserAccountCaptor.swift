@@ -4,10 +4,13 @@ import NIOHTTP1
 
 class BrowserAccountCaptor {
     private let config: AuthConfig
+    private let server: HttpServer
+    
     private var code: String?
     
     init(config: AuthConfig) {
         self.config = config
+        self.server = HttpServer()
     }
     
     func startSigningInPageSync() async throws -> (CodeResult) {
@@ -18,9 +21,9 @@ class BrowserAccountCaptor {
     
     func startSigningInPage(completion: @escaping (CodeResult) -> Void) throws {
         let semaphore = DispatchSemaphore(value: 0)
-        let serverUrl = try startServer(semaphore: semaphore)
+        try startServer(semaphore: semaphore)
         
-        let serverEndpoint = serverUrl + config.redirectPath;
+        let serverEndpoint = self.server.localUrl + self.config.redirectPath;
         let signInPageURL = createSignInPageURL(serverEndpoint)
         openURL(signInPageURL)
         
@@ -29,9 +32,8 @@ class BrowserAccountCaptor {
         completion(CodeResult(endpoint: serverEndpoint, code: code))
     }
     
-    private func startServer(semaphore: DispatchSemaphore) throws -> String {
-        let server = HttpServer()
-        try server.start() { (server, request) -> (String, HTTPResponseStatus) in
+    private func startServer(semaphore: DispatchSemaphore) throws {
+        try self.server.start() { (server, request) -> (String, HTTPResponseStatus) in
             if request.uri.unicodeScalars.starts(with: self.config.redirectPath.unicodeScalars) {
                 if let components = URLComponents(string: request.uri) {
                     DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
@@ -46,8 +48,6 @@ class BrowserAccountCaptor {
                 return ("not found.", .notFound)
             }
         }
-        
-        return server.localUrl
     }
     
     private func createSignInPageURL(_ redirectUri: String) -> URL {
