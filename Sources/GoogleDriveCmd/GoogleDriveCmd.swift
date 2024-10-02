@@ -12,6 +12,8 @@ struct GoogleDriveCmd: AsyncParsableCommand {
         
         let config = try loadConfig()
         print(config)
+        
+        try await self.startAuth(config)
     }
     
     private func loadConfig() throws -> AuthConfig {
@@ -24,5 +26,15 @@ struct GoogleDriveCmd: AsyncParsableCommand {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
         return try decoder.decode(AuthConfig.self, from: json.data(using: .utf8)!)
+    }
+    
+    private func startAuth(_ config: AuthConfig) async throws {
+        let captor = BrowserAccountCaptor(config: config)
+        let result = try await captor.startSigningInPageSync()
+        print("code: \(result)")
+        
+        let tokenService = AuthTokenService(config: config, code: result)
+        let token = try await tokenService.requestToken()
+        print("token: \(token)")
     }
 }
