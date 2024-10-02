@@ -1,6 +1,6 @@
 import Foundation
 
-struct AuthConfig {
+struct AuthConfig: Codable {
     let clientId: String
     let clientSecret: String
     let authorizeUrl: String
