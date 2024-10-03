@@ -15,7 +15,7 @@ class AuthTokenService {
         
         var request = URLRequest(url: baseURL)
         request.httpMethod = "POST"
-        //request.setValue(self.createBasicAuth(), forHTTPHeaderField: "Authorization")
+        request.setValue(self.createBasicAuth(), forHTTPHeaderField: "Authorization")
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = self.createHttpBody()
         
