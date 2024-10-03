@@ -15,7 +15,7 @@ class AuthTokenService {
         
         var request = URLRequest(url: baseURL)
         request.httpMethod = "POST"
-        request.setValue(self.createBasicAuth(), forHTTPHeaderField: "Authorization")
+        //request.setValue(self.createBasicAuth(), forHTTPHeaderField: "Authorization")
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = self.createHttpBody()
         
@@ -43,7 +43,6 @@ class AuthTokenService {
     private func createQueryItems() -> [URLQueryItem] {
         return [
             URLQueryItem(name: "client_id", value: config.clientId),
-            URLQueryItem(name: "client_secret", value: config.clientSecret),
             URLQueryItem(name: "grant_type", value: "authorization_code"),
             URLQueryItem(name: "code", value: code.code!),
             URLQueryItem(name: "redirect_uri", value: code.endpoint)
