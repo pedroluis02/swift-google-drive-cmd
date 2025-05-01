@@ -51,7 +51,7 @@ class BrowserAccountCaptor {
     }
     
     private func createSignInPageURL(_ redirectUri: String) -> URL {
-        var components = URLComponents(string: config.authorizeUrl)!
+        var components = URLComponents(string: config.authUri)!
         components.queryItems = [
             URLQueryItem(name: "client_id", value: config.clientId),
             URLQueryItem(name: "response_type", value: "code"),

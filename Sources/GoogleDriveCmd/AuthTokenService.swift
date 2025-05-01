@@ -17,7 +17,7 @@ class AuthTokenService {
     }
     
     private func doRequest(_ queryItems: [URLQueryItem]) async throws -> TokenResult {
-        let baseURL = URL(string: config.accessTokenUrl)!
+        let baseURL = URL(string: config.tokenUri)!
         
         var request = URLRequest(url: baseURL)
         request.httpMethod = "POST"

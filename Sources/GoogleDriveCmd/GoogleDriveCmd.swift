@@ -37,7 +37,7 @@ struct GoogleDriveCmd: AsyncParsableCommand {
         let accessToken = try await tokenService.requestToken(code: code)
         print("access token: \(accessToken)")
 
-        let tokenRefresh = try await tokenService.refreshToken(refreshToken: token.refreshToken!)
-        print("refresh token: \(tokenRefresh)")
+        let tokenRefresh = try await tokenService.refreshToken(refreshToken: accessToken.refreshToken!)
+        print("refresh token: \(tokenRefresh)") 
     }
 }
