@@ -55,7 +55,7 @@ class BrowserAccountCaptor {
         components.queryItems = [
             URLQueryItem(name: "client_id", value: config.clientId),
             URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "scope", value: "email"),
+            URLQueryItem(name: "scope", value: config.authScope),
             URLQueryItem(name: "redirect_uri", value: redirectUri),
             URLQueryItem(name: "show_dialog", value: "false")
         ]
