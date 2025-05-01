@@ -29,8 +29,8 @@ struct GoogleDriveCmd: AsyncParsableCommand {
     }
     
     private func startAuth(_ config: AuthConfig) async throws {
-        let captor = BrowserAccountCaptor(config: config)
-        let code = try await captor.startSigningInPageSync()
+        let authServer = AccountAuthServer(config: config)
+        let code = try await authServer.signIn()
         print("code: \(code)")
         
         let tokenService = AuthTokenService(config: config)

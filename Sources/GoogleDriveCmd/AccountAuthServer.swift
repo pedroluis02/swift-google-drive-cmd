@@ -2,7 +2,7 @@ import Foundation
 import Dispatch
 import NIOHTTP1
 
-class BrowserAccountCaptor {
+class AccountAuthServer {
     private let config: AuthConfig
     private let server: HttpServer
     
@@ -13,13 +13,13 @@ class BrowserAccountCaptor {
         self.server = HttpServer()
     }
     
-    func startSigningInPageSync() async throws -> (CodeResult) {
+    func signIn() async throws -> (CodeResult) {
         return await withCheckedContinuation { continuation in
             try! startSigningInPage() { continuation.resume(returning: $0) }
         }
     }
     
-    func startSigningInPage(completion: @escaping (CodeResult) -> Void) throws {
+    private func startSigningInPage(completion: (CodeResult) -> Void) throws {
         let semaphore = DispatchSemaphore(value: 0)
         try startServer(semaphore: semaphore)
         
