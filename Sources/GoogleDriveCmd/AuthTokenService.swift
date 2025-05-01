@@ -3,15 +3,13 @@ import NIOHTTP1
 
 class AuthTokenService {
     private let config: AuthConfig
-    private let code: CodeResult
     
-    init(config: AuthConfig, code: CodeResult) {
+    init(config: AuthConfig) {
         self.config = config
-        self.code = code
     }
     
-    func requestToken() async throws -> TokenResult {
-        return try await doRequest(self.createTokenRequestQueryItems())
+    func requestToken(code: CodeResult) async throws -> TokenResult {
+        return try await doRequest(self.createTokenRequestQueryItems(code))
     }
     
     func refreshToken(refreshToken value: String) async throws -> TokenResult {
@@ -39,7 +37,7 @@ class AuthTokenService {
         return "Basic \(tokenBase64)"
     }
     
-    private func createTokenRequestQueryItems() -> [URLQueryItem] {
+    private func createTokenRequestQueryItems(_ code: CodeResult) -> [URLQueryItem] {
         return [
             URLQueryItem(name: "client_id", value: config.clientId),
             URLQueryItem(name: "grant_type", value: "authorization_code"),
